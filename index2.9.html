@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Esquiva los Meteoritos</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #050816;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+#juego {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 20% 20%, white 1px, transparent 2px),
+        radial-gradient(circle at 70% 40%, white 1px, transparent 2px),
+        radial-gradient(circle at 40% 80%, white 1px, transparent 2px),
+        #050816;
+    background-size: 120px 120px;
+}
+
+#marcador {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    font-size: 20px;
+    z-index: 10;
+}
+
+#vidas {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    z-index: 10;
+}
+
+#nave {
+    position: absolute;
+    bottom: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 55px;
+    z-index: 5;
+}
+
+.meteorito {
+    position: absolute;
+    top: -60px;
+    font-size: 45px;
+    z-index: 4;
+}
+
+#inicio,
+#gameOver {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 20;
+    padding: 25px;
+}
+
+#gameOver {
+    display: none;
+}
+
+h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+button {
+    margin-top: 20px;
+    padding: 15px 35px;
+    border: none;
+    border-radius: 30px;
+    font-size: 18px;
+    font-weight: bold;
+    background: white;
+    color: #111;
+}
+
+.explosion {
+    position: absolute;
+    font-size: 50px;
+    z-index: 15;
+    animation: explotar .5s forwards;
+}
+
+@keyframes explotar {
+    0% {
+        transform: scale(.5);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="juego">
+
+    <div id="marcador">
+        🏆 Puntos: <span id="puntos">0</span>
+    </div>
+
+    <div id="vidas">
+        ❤️❤️❤️
+    </div>
+
+    <div id="nave">🚀</div>
+
+    <!-- INICIO -->
+    <div id="inicio">
+        <h1>🚀 Esquiva los Meteoritos</h1>
+
+        <p>
+            Mueve la nave con tu dedo.<br>
+            ¡No dejes que los meteoritos te golpeen!
+        </p>
+
+        <p>
+            Sobrevive todo lo que puedas. ☄️
+        </p>
+
+        <button onclick="empezar()">JUGAR</button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="gameOver">
+
+        <h1>💥 ¡GAME OVER!</h1>
+
+        <p>
+            Tu puntuación:
+            <strong id="puntuacionFinal">0</strong>
+        </p>
+
+        <button onclick="reiniciar()">JUGAR OTRA VEZ</button>
+
+    </div>
+
+</div>
+
+<script>
+
+let nave;
+let puntos = 0;
+let vidas = 3;
+let jugando = false;
+let velocidad = 3;
+let crearIntervalo;
+
+const juego = document.getElementById("juego");
+const naveElemento = document.getElementById("nave");
+
+
+// COMENZAR
+function empezar() {
+
+    document.getElementById("inicio").style.display = "none";
+
+    puntos = 0;
+    vidas = 3;
+    velocidad = 3;
+    jugando = true;
+
+    actualizarMarcador();
+
+    crearMeteorito();
+
+}
+
+
+// CONTROL CON EL DEDO
+juego.addEventListener("touchmove", function(e) {
+
+    if (!jugando) return;
+
+    let toque = e.touches[0];
+
+    moverNave(toque.clientX);
+
+});
+
+
+// TAMBIÉN FUNCIONA CON MOUSE
+juego.addEventListener("mousemove", function(e) {
+
+    if (!jugando) return;
+
+    moverNave(e.clientX);
+
+});
+
+
+function moverNave(x) {
+
+    let mitad = naveElemento.offsetWidth / 2;
+
+    let posicion = x - mitad;
+
+    if (posicion < 0)
+        posicion = 0;
+
+    if (posicion > window.innerWidth - naveElemento.offsetWidth)
+        posicion = window.innerWidth - naveElemento.offsetWidth;
+
+    naveElemento.style.left = posicion + "px";
+    naveElemento.style.transform = "none";
+}
+
+
+// CREAR METEORITOS
+function crearMeteorito() {
+
+    if (!jugando) return;
+
+    const meteorito = document.createElement("div");
+
+    meteorito.className = "meteorito";
+    meteorito.textContent = "☄️";
+
+    let x = Math.random() * (window.innerWidth - 50);
+
+    meteorito.style.left = x + "px";
+
+    juego.appendChild(meteorito);
+
+    let posicionY = -60;
+
+    let intervalo = setInterval(() => {
+
+        if (!jugando) {
+            clearInterval(intervalo);
+            meteorito.remove();
+            return;
+        }
+
+        posicionY += velocidad;
+
+        meteorito.style.top = posicionY + "px";
+
+
+        // DETECTAR GOLPE
+        if (colision(meteorito, naveElemento)) {
+
+            clearInterval(intervalo);
+
+            crearExplosion(
+                meteorito.offsetLeft,
+                meteorito.offsetTop
+            );
+
+            meteorito.remove();
+
+            perderVida();
+
+            return;
+        }
+
+
+        // SI SALE DE LA PANTALLA
+        if (posicionY > window.innerHeight) {
+
+            clearInterval(intervalo);
+            meteorito.remove();
+
+            puntos++;
+
+            document.getElementById("puntos").textContent = puntos;
+
+            // Aumentar dificultad
+            if (puntos % 5 === 0) {
+                velocidad += .5;
+            }
+        }
+
+    }, 20);
+
+
+    // Crear siguiente meteorito
+    setTimeout(crearMeteorito,
+        Math.max(250, 700 - puntos * 10));
+}
+
+
+// COLISION
+function colision(a, b) {
+
+    let A = a.getBoundingClientRect();
+    let B = b.getBoundingClientRect();
+
+    return !(
+        A.bottom < B.top ||
+        A.top > B.bottom ||
+        A.right < B.left ||
+        A.left > B.right
+    );
+}
+
+
+// PERDER VIDA
+function perderVida() {
+
+    vidas--;
+
+    actualizarMarcador();
+
+    if (vidas <= 0) {
+        terminar();
+    }
+}
+
+
+// ACTUALIZAR VIDAS
+function actualizarMarcador() {
+
+    document.getElementById("puntos").textContent = puntos;
+
+    let corazones = "";
+
+    for (let i = 0; i < vidas; i++) {
+        corazones += "❤️";
+    }
+
+    document.getElementById("vidas").textContent = corazones;
+}
+
+
+// EXPLOSIÓN
+function crearExplosion(x, y) {
+
+    const explosion = document.createElement("div");
+
+    explosion.className = "explosion";
+    explosion.textContent = "💥";
+
+    explosion.style.left = x + "px";
+    explosion.style.top = y + "px";
+
+    juego.appendChild(explosion);
+
+    setTimeout(() => {
+        explosion.remove();
+    }, 500);
+}
+
+
+// GAME OVER
+function terminar() {
+
+    jugando = false;
+
+    document.getElementById("puntuacionFinal").textContent = puntos;
+
+    document.getElementById("gameOver").style.display = "flex";
+}
+
+
+// REINICIAR
+function reiniciar() {
+
+    location.reload();
+
+}
+
+</script>
+
+</body>
+</html>
