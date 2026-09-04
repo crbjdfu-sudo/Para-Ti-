@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Una sorpresa para ti ❤️</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #120018, #4b003f, #ff2d75);
+    font-family: Arial, sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Fondo */
+.estrellas {
+    position: fixed;
+    inset: 0;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+    background-size: 50px 50px, 80px 80px;
+    opacity: 0.25;
+}
+
+/* Contenedor */
+.contenedor {
+    position: relative;
+    z-index: 2;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+}
+
+/* Sobre */
+.sobre {
+    width: 280px;
+    height: 190px;
+    background: #ff477e;
+    margin: auto;
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    transition: 0.6s;
+}
+
+.sobre:hover {
+    transform: scale(1.05);
+}
+
+.sobre::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-left: 140px solid transparent;
+    border-right: 140px solid transparent;
+    border-top: 100px solid #ff7199;
+    transform-origin: top;
+    transition: 0.8s;
+    z-index: 3;
+}
+
+.corazon {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 45px;
+    z-index: 4;
+}
+
+/* Carta */
+.carta {
+    display: none;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 30px 25px;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    animation: aparecer 1.2s ease;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+h1 {
+    font-size: 34px;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.nombre {
+    color: #ff9fbd;
+    font-weight: bold;
+}
+
+button {
+    margin-top: 15px;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 30px;
+    background: white;
+    color: #e52b6f;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Mensaje final */
+.final {
+    display: none;
+    margin-top: 20px;
+    font-size: 21px;
+    animation: aparecer 1s ease;
+}
+
+/* Corazones flotando */
+.corazon-flotante {
+    position: fixed;
+    bottom: -50px;
+    font-size: 25px;
+    animation: subir 6s linear infinite;
+    z-index: 1;
+}
+
+@keyframes subir {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="estrellas"></div>
+
+<div class="corazon-flotante" style="left:10%; animation-delay:0s;">❤️</div>
+<div class="corazon-flotante" style="left:25%; animation-delay:2s;">💕</div>
+<div class="corazon-flotante" style="left:45%; animation-delay:4s;">❤️</div>
+<div class="corazon-flotante" style="left:65%; animation-delay:1s;">💗</div>
+<div class="corazon-flotante" style="left:85%; animation-delay:3s;">❤️</div>
+
+<div class="contenedor">
+
+    <!-- SOBRE -->
+    <div class="sobre" id="sobre" onclick="abrirCarta()">
+        <div class="corazon">❤️</div>
+    </div>
+
+    <p id="textoSobre" style="margin-top:20px;">
+        Toca el sobre... 💌
+    </p>
+
+    <!-- CARTA -->
+    <div class="carta" id="carta">
+
+        <h1>Para ti ❤️</h1>
+
+        <p>
+            Hay personas que llegan a nuestra vida
+            y simplemente hacen que todo se sienta diferente.
+        </p>
+
+        <p>
+            Y tú eres una de esas personas para mí.
+        </p>
+
+        <p>
+            No necesito que sea una fecha especial
+            para decirte lo importante que eres para mí.
+        </p>
+
+        <p class="nombre">
+            Gracias por estar en mi vida. ❤️
+        </p>
+
+        <button onclick="mostrarFinal()">
+            Pero falta algo... ✨
+        </button>
+
+        <div class="final" id="final">
+            ❤️ Te quiero ❤️
+            <br><br>
+             talvez no puedo expresarme muy bien...
+            <br><br>
+            ✨ para mi es l melodia mas bonita la nota perfecta, 
+          las cuerdas que se unen en sintonia cada que la pienso,
+          un diccionario,las pqlabras,las letras y números se quedan cortas
+          con lo que le quiero dar a entender  ✨
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function abrirCarta() {
+
+    document.getElementById("sobre").style.display = "none";
+
+    document.getElementById("textoSobre").style.display = "none";
+
+    document.getElementById("carta").style.display = "block";
+
+}
+
+function mostrarFinal() {
+
+    document.getElementById("final").style.display = "block";
+
+}
+
+</script>
+
+</body>
+</html>
